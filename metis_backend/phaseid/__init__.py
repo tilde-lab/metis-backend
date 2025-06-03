@@ -19,14 +19,7 @@ MAX_PATT_LEN = 1200
 
 
 def get_non_zero_indices(data):
-    res = []
-
-    for i, datum in enumerate(data):
-        if datum != 0:
-            res.append(i)
-
-    return res
-    #return np.nonzero(data)[0]
+    return np.nonzero(data)[0]
 
 
 def cleanup_convert_dis(dis):
@@ -44,6 +37,15 @@ def get_q_twotheta_wv(angular_vals, wavelength):
         q_values[n] = (4 * np.pi * np.sin(np.deg2rad(item / 2))) / wavelength
 
     return q_values
+
+
+def get_twotheta_qwv(q_values, wavelength):
+    twotheta = np.zeros(len(q_values))
+
+    for n, q_value in enumerate(q_values):
+        twotheta[n] = np.rad2deg(2 * math.asin(wavelength * q_value / (4 * math.pi)))
+
+    return twotheta
 
 
 def get_q_dspace(dspacings):

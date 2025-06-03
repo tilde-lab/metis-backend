@@ -105,7 +105,10 @@ def optimade_to_ase(structure, skip_disorder=False):
         None *or* error (str)
     """
     if type(structure) == str:
-        structure = json.loads(structure)
+        try:
+            structure = json.loads(structure)
+        except Exception:
+            return None, "Misformatted data occured"
 
     # if 'cartesian_site_positions' not in structure['attributes'] or 'lattice_vectors' not in structure['attributes']:
     #    return None, "Invalid structure"
@@ -369,20 +372,23 @@ def get_formula(ase_obj, find_gcd=True, as_dict=False):
 
 
 def sgn_to_crsystem(number):
-    if 195 <= number <= 230:
-        return "cubic"
-    elif 168 <= number <= 194:
-        return "hexagonal"
-    elif 143 <= number <= 167:
-        return "trigonal"
-    elif 75 <= number <= 142:
-        return "tetragonal"
-    elif 16 <= number <= 74:
-        return "orthorhombic"
-    elif 3 <= number <= 15:
-        return "monoclinic"
-    else:
-        return "triclinic"
+    if 195 <= number <= 230:    return "cubic"
+    elif 168 <= number <= 194:  return "hexagonal"
+    elif 143 <= number <= 167:  return "trigonal"
+    elif 75 <= number <= 142:   return "tetragonal"
+    elif 16 <= number <= 74:    return "orthorhombic"
+    elif 3 <= number <= 15:     return "monoclinic"
+    else:                       return "triclinic"
+
+
+def sgn_to_label(number):
+    if 195 <= number <= 230:    return "cub"
+    elif 168 <= number <= 194:  return "hex"
+    elif 143 <= number <= 167:  return "trig"
+    elif 75 <= number <= 142:   return "tet"
+    elif 16 <= number <= 74:    return "orth"
+    elif 3 <= number <= 15:     return "monocl"
+    else:                       return "tricl"
 
 
 def crsystem_to_sgn(crsystem):

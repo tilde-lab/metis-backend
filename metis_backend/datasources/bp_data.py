@@ -18,7 +18,7 @@ from metis_backend.helpers import (
 )
 from metis_backend.datasources import Data_type
 from metis_backend.datasources.fmt import detect_format
-from metis_backend.datasources.xrpd import extract_pattern
+from metis_backend.datasources.xrpd import extract_pattern, nexus_to_xye
 from metis_backend.structures import html_formula
 from metis_backend.structures.cif_utils import cif_to_ase
 from metis_backend.structures.struct_utils import (
@@ -29,7 +29,7 @@ from metis_backend.structures.struct_utils import (
     ase_serialize,
     ase_unserialize,
 )
-from metis_backend.calculations.xrpd import get_pattern
+from metis_backend.calculations.xrpd import get_pattern, topas_serialize, topas_unserialize
 
 
 bp_data = Blueprint("data", __name__, url_prefix="/data")
@@ -87,9 +87,13 @@ def create():
         if not xrd_obj:
             error = "Not a valid pattern provided"
 
+    elif fmt == "nexus":
+        xrd_obj = nexus_to_xye(content)
+        if not xrd_obj:
+            error = "Not a valid synchrotron format provided"
+
     elif fmt == "topas":
-        try: input_obj = content.decode("ascii", errors="ignore")
-        except AttributeError: input_obj = content
+        input_obj = topas_serialize(content)
 
     else: return fmt_msg("Provided data format unsuitable or not recognized")
 
@@ -330,7 +334,7 @@ def examine():
         except Exception: return fmt_msg("Sorry erroneous data cannot be shown")
 
     elif item["type"] == Data_type.user_input:
-        output["content"] = item["content"]
+        output["content"] = topas_unserialize(item["content"])
 
     elif item["type"] == Data_type.structure:
         ase_obj = ase_unserialize(item["content"])
